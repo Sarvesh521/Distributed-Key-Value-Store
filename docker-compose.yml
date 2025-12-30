@@ -1,0 +1,94 @@
+services:
+  kv-controller:
+    build:
+      context: .
+      dockerfile: kv-controller/Dockerfile
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    networks:
+      - kv-network
+
+  db1: &db-base
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: kvdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    networks:
+      - kv-network
+
+  db2:
+    <<: *db-base
+  db3:
+    <<: *db-base
+  db4:
+    <<: *db-base
+
+  w1: &worker-base
+    build:
+      context: .
+      dockerfile: kv-worker/Dockerfile
+    environment:
+      - WORKER_ID=w1
+      - WORKER_ADDRESS=w1
+      - GRPC_PORT=9091
+      - DB_HOST=db1
+      - DB_NAME=kvdb
+      - DB_USER=postgres
+      - DB_PASS=password
+      - CONTROLLER_HOST=kv-controller
+    depends_on:
+      - db1
+      - kv-controller
+    networks:
+      - kv-network
+
+  w2:
+    <<: *worker-base
+    environment:
+      - WORKER_ID=w2
+      - WORKER_ADDRESS=w2
+      - GRPC_PORT=9091
+      - DB_HOST=db2
+      - DB_NAME=kvdb
+      - DB_USER=postgres
+      - DB_PASS=password
+      - CONTROLLER_HOST=kv-controller
+    depends_on:
+      - db2
+      - kv-controller
+
+  w3:
+    <<: *worker-base
+    environment:
+      - WORKER_ID=w3
+      - WORKER_ADDRESS=w3
+      - GRPC_PORT=9091
+      - DB_HOST=db3
+      - DB_NAME=kvdb
+      - DB_USER=postgres
+      - DB_PASS=password
+      - CONTROLLER_HOST=kv-controller
+    depends_on:
+      - db3
+      - kv-controller
+
+  w4:
+    <<: *worker-base
+    environment:
+      - WORKER_ID=w4
+      - WORKER_ADDRESS=w4
+      - GRPC_PORT=9091
+      - DB_HOST=db4
+      - DB_NAME=kvdb
+      - DB_USER=postgres
+      - DB_PASS=password
+      - CONTROLLER_HOST=kv-controller
+    depends_on:
+      - db4
+      - kv-controller
+
+networks:
+  kv-network:
+    driver: bridge

@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package com.distkv.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.distkv.grpc";
+
+service KVService {
+  rpc Put(PutRequest) returns (PutResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc Replicate(ReplicateRequest) returns (ReplicateResponse);
+  rpc Sync(SyncRequest) returns (stream SyncEntry);
+}
+
+service HealthService {
+  rpc Heartbeat(stream HeartbeatRequest) returns (stream HeartbeatResponse);
+}
+
+message PutRequest {
+  string key = 1;
+  string value = 2;
+  map<string, int64> vector_clock = 3;
+}
+
+message PutResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetRequest {
+  string key = 1;
+}
+
+message GetResponse {
+  string value = 1;
+  map<string, int64> vector_clock = 2;
+  bool found = 3;
+}
+
+message ReplicateRequest {
+  string key = 1;
+  string value = 2;
+  map<string, int64> vector_clock = 3;
+}
+
+message ReplicateResponse {
+  bool success = 1;
+}
+
+message SyncRequest {
+  string worker_id = 1;
+  map<string, int64> last_vector_clock = 2;
+}
+
+message SyncEntry {
+  string key = 1;
+  string value = 2;
+  map<string, int64> vector_clock = 3;
+}
+
+message HeartbeatRequest {
+  string worker_id = 1;
+  string address = 2;
+  int32 port = 3;
+}
+
+message HeartbeatResponse {
+  string status = 1;
+  string sync_from_address = 2;
+  int32 sync_from_port = 3;
+}
