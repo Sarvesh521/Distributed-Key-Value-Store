@@ -34,7 +34,7 @@ The system consists of two main component types:
     *   Send periodic heartbeats to the Controller.
     *   Handle `PUT`, `GET`, `REPLICATE`, and `SYNC` gRPC requests.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 *   **Language**: Java 17
 *   **Framework**: Spring Boot 3.x
@@ -70,7 +70,7 @@ The entire cluster (1 Controller, 4 Workers, 4 Databases) is orchestrated via Do
     ```
     You should see `kv-controller`, `w1`, `w2`, `w3`, `w4`, and their respective databases.
 
-## 🔌 API Reference
+## API Reference
 
 Base URL: `http://localhost:8080`
 
